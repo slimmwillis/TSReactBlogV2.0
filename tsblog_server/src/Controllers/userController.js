@@ -1,6 +1,6 @@
 const subscriberModel = require("../Models/subscriberModel");
-const bcrypt = require("bcrypt");
-const validator = require("validator");
+// const bcrypt = require("bcrypt");
+// const validator = require("validator");
 const jwt = require("jsonwebtoken");
 
 const createToken = (_id) => {
@@ -23,12 +23,12 @@ const registerSubscriber = async (req, res) => {
 
         if (!name || !email || !password) return res.status(400).json("All fields are required...");
 
-        if (!validator.isEmail(email)) return res.status(400).json("email not valid...");
-        if (!validator.isStrongPassword(password)) return res.status(400).json("password must be strong...");
+        // if (!validator.isEmail(email)) return res.status(400).json("email not valid...");
+        // if (!validator.isStrongPassword(password)) return res.status(400).json("password must be strong...");
 
         subscriber = new subscriberModel({ name, email, password });
-        const salt = await bcrypt.genSalt(10);
-        subscriber.password = await bcrypt.hash(subscriber.password, salt);
+        // const salt = await bcrypt.genSalt(10);
+        // subscriber.password = await bcrypt.hash(subscriber.password, salt);
         await subscriber.save();
 
         const token = createToken(subscriber._id);
@@ -48,7 +48,7 @@ const loginSubscriber = async (req, res) => {
 
         if (!subscriber) return res.status(400).json("Invalid Email or Password");
 
-        const isValidPassword = await bcrypt.compare(password, subscriber.password);
+        // const isValidPassword = await bcrypt.compare(password, subscriber.password);
 
         if (!isValidPassword) return res.status(400).json("Invalid Email or Password");
 

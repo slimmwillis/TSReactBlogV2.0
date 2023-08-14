@@ -1,0 +1,92 @@
+import { createContext, useCallback, useEffect, useState } from "react";
+import { baseUrl, postRequest } from "../utils/services";
+
+export const AuthContext = createContext();
+
+export const AuthContextProvider = ({ children }) => {
+
+    const [subscriber, setSubscriber] = useState(null);
+    const [registerError, setRegisterError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const [loginError, setLoginError] = useState(null);
+    const [isLoginLoading, setIsLoginLoading] = useState(false);
+    const [registerInfo, setRegisterInfo] = useState({
+        name: "",
+        email: "",  
+        password: "",
+    });
+    const [loginInfo, setLoginInfo] = useState({
+        email: "",
+        password: "",
+    })
+
+    useEffect(() => {
+        const subscriber = localStorage.getItem("Subscriber");
+        setSubscriber(JSON.parse(subscriber))
+    }, [])
+
+    const updateRegisterInfo = useCallback((info) => {
+        setRegisterInfo(info);
+    }, []);
+
+    const updateLoginInfo = useCallback((info) => {
+        setLoginInfo(info);
+    }, []);
+
+    const registersubscriber = useCallback(async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setRegisterError(null);
+        const response = await postRequest(`${baseUrl}/subscribers/register`, JSON.stringify(registerInfo));
+
+        setIsLoading(false);
+        if (response.error) {
+            return setRegisterError(response);
+        }
+        localStorage.setItem("Subscriber", JSON.stringify(response));
+        setSubscriber(response);
+    }, [registerInfo]);
+
+    const loginSubscriber = useCallback(async (e) => {
+        e.preventDefault();
+        setIsLoginLoading(true);
+        setLoginError(null);
+
+        const response = await postRequest(`${baseUrl}/subscribers/login`, JSON.stringify(loginInfo));
+        setIsLoginLoading(false);
+        if (response.error) {
+            return setLoginError(response);
+        }
+
+        localStorage.setItem("Subscriber", JSON.stringify(response));
+        setSubscriber(response);
+    }, [loginInfo])
+
+    const logoutSubscriber = useCallback(() => {
+        localStorage.removeItem("Subscriber");
+        setSubscriber(null);
+    }, [])
+
+    return <AuthContext.Provider
+        value={{
+            subscriber,
+            registerInfo,
+            updateRegisterInfo,
+            registerSubscriber,
+            registerError,
+            isLoading,
+            
+            logoutSubscriber,
+
+            loginSubscriber,
+            updateLoginInfo,
+            loginInfo,
+            loginError,
+            isLoginLoading,
+        }}>
+        {children}
+    </AuthContext.Provider>
+
+}
+

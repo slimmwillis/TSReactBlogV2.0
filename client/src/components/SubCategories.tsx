@@ -19,13 +19,13 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import AddCategoryDialog from "./AddCategoryDialog";
 import Button from "@mui/material/Button";
 import { AuthContext, AuthContextType } from "../context/AuthContext";
-import AddPostDialog from "./AddPostDialog";
+import AddPostDialog from "./ArchiveAddPostDialog";
 import { PostListTemplate } from "./PostListTemplate";
 import AddSubCategoryDialog from "./AddSubCategoryDialog";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
-const drawerWidth = 240;
+const drawerWidth = "100%";
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -79,7 +79,7 @@ const Drawer = styled(MuiDrawer, {
   boxSizing: "border-box",
   ...(open && {
     ...openedMixin(theme),
-    "& .MuiDrawer-paper": openedMixin(theme),
+    "& .MuiDrawer-paper": { ...openedMixin(theme) },
   }),
   ...(!open && {
     ...closedMixin(theme),
@@ -178,18 +178,27 @@ export function SubCategories() {
     setSubCategories(updatedCategories);
   };
 
+  const removeSubCategory = async (e:any, index:number, id:string) => {
+    e.stopPropagation()
+    const res = await axios.delete(`/api/subcategories/${id}`)
+
+    handleRemoveItem(index);
+  };
+
   return (
     <>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
 
-        <Drawer variant="permanent" open={open}>
+        <Drawer variant="permanent" open={open} sx={{ flex: 1 }}>
           <Divider />
           <List>
             {subCategories.map((subCategory: any, index: any) => (
               <ListItem
                 key={index}
-                onClick={() => navigate(`/categories/${category.name}/${subCategory.name}`)}
+                onClick={() =>
+                  navigate(`/categories/${category.name}/${subCategory.name}`)
+                }
                 disablePadding
                 sx={{
                   // display: "block",
@@ -229,7 +238,7 @@ export function SubCategories() {
                 {/* remove list item */}
 
                 {admin && (
-                  <Button onClick={() => handleRemoveItem(index)}>
+                  <Button onClick={(e)=>removeSubCategory(e, index, subCategory._id)}>
                     {open ? (
                       <div id="remove"> Remove</div>
                     ) : (
@@ -277,7 +286,7 @@ export function SubCategories() {
         open={openAddSubCategoryDialog}
         handleClose={handleClose}
       />
-      <PostListTemplate />
+      {/* <PostListTemplate /> */}
     </>
   );
 }

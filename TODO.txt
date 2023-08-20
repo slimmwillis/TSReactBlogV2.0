@@ -1,0 +1,34 @@
+1. Add text editor for posting blog*
+    1.a) add an edit function that uses the text editor
+    1.b)fix header, looks bad*
+
+2. make the site responsive*
+
+//3. fix styling errors
+
+//4. make it so that when remove button on subcategories is clicked it will remove the subcategory and all posts under that subcategory
+
+5. Make socials link to real socials*
+
+//6. style post page a bit better
+
+//7. move add post to subcategories
+
+8. Add ability to insert images*
+
+9. Youtube and external links should have a preview option when hovering*
+
+//10. add nice hovering effects to all clickable items
+
+//11. console.log to server when a post/category/sub is SUCCESSFULLY created.
+
+//12. give categories a hoverable popup displaying an image preview like a thumbnail
+
+//13. give a nice looking successful email has been sent alert
+
+//14. remove message suggesting the user login.
+
+15. create a way for user to unsubscribe*
+
+//16. Is cookie consent/privacy data needed for this website?
+

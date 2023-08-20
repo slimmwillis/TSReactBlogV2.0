@@ -24,7 +24,7 @@ import { AuthContext, AuthContextType } from "../context/AuthContext";
 import axios, { AxiosError } from "axios";
 import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import SubCategoryModel from "../../../tsblog_server/src/models/subcategory"
+import SubCategoryModel from "../../../server/src/models/subcategory";
 
 const drawerWidth = 240;
 
@@ -104,7 +104,7 @@ interface Category {
 
 interface SubCategory {
   _id: string;
-  name: string
+  name: string;
 }
 
 interface Error {
@@ -114,7 +114,6 @@ interface Error {
 }
 
 export default function NavMenu() {
-
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
@@ -164,11 +163,8 @@ export default function NavMenu() {
 
   const handleRemoveItem = async (id: string) => {
     try {
-
-
-            // Delete associated subcategories using a dedicated API endpoint
-    // await axios.delete(`/api/categories/${id}/subcategories/${id}`);
-
+      // Delete associated subcategories using a dedicated API endpoint
+      // await axios.delete(`/api/categories/${id}/subcategories/${id}`);
 
       console.log("Deleting category with ID:", id);
       await axios.delete(`/api/categories/${id}`);
@@ -185,10 +181,6 @@ export default function NavMenu() {
         const encodedCategoryName = encodeURIComponent(categoryToDelete.name);
         navigate(`/categories/${encodedCategoryName}`);
       }
-      
-
-
-
     } catch (error) {
       console.error("Error removing category:", error);
     }
@@ -202,7 +194,7 @@ export default function NavMenu() {
   useEffect(() => {
     fetchCategories();
   }, []);
-// This Might Be Pointless
+  // This Might Be Pointless
   useEffect(() => {
     fetchSubCategories();
   }, []);
@@ -215,7 +207,7 @@ export default function NavMenu() {
       console.error("Error fetching categories:", error);
     }
   };
-      // This might be pointless
+  // This might be pointless
   const fetchSubCategories = async () => {
     try {
       const response = await axios.get("/api/categories/{get.params.id}");
@@ -224,8 +216,6 @@ export default function NavMenu() {
       console.error("Error fetching subcategories:", error);
     }
   };
-
-
 
   return (
     <Box sx={{ display: "flex" }}>

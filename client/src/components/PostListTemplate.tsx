@@ -18,9 +18,9 @@ import "./navMenu.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import { AuthContext, AuthContextType } from "../context/AuthContext";
-import AddPostDialog from "./AddPostDialog";
+import AddPostDialog from "./ArchiveAddPostDialog";
 
-const drawerWidth = 240;
+const drawerWidth = "100%";
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -105,8 +105,7 @@ export function PostListTemplate() {
   const [openAddPostDialog, setOpenAddPostDialog] = useState(false);
 
   const handleClickOpenPost = () => {
-    
-navigateToManagePost();
+    navigateToManagePost();
 
     // setOpenAddPostDialog(true);
   };
@@ -114,7 +113,7 @@ navigateToManagePost();
   const navigateToManagePost = () => {
     // Your custom navigation logic here
     // For example, you can use window.location.href or any other method to navigate
-    window.location.href = "/manage";
+    navigate("/manage");
   };
 
   const handleClosePost = () => {
@@ -148,8 +147,6 @@ navigateToManagePost();
     setCategories(updatedCategories);
   };
 
-  
-
   return (
     <>
       {/* ************POST TEMPLATE******** */}
@@ -157,96 +154,13 @@ navigateToManagePost();
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
 
-        <Drawer variant="permanent" open={open}>
-          <Divider />
-          <List>
-            {posts.map((text: any, index: any) => (
-              <ListItem
-                key={index}
-                onClick={() => navigate(`/posts/${text}`)}
-                disablePadding
-                sx={{
-                  display: "block",
-                  bgcolor:
-                    location.pathname === `/posts/${encodeURIComponent(text)}`
-                      ? "rgb(245, 245, 245)"
-                      : "white",
-                }}
-              >
-                <ListItemButton
-                  sx={{
-                    minHeight: 12,
-                    justifyContent: open ? "initial" : "center",
-                    px: 2.5,
-                  }}
-                >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : "auto",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {/* {index % 2 === 0 ? <div></div> : <div></div>} */}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={text}
-                    style={{
-                      opacity: open ? 1 : 0.95,
-                      fontSize: open ? "1rem" : "0.5rem",
-                      color: open ? "black" : "black",
-                    }}
-                  />
-                </ListItemButton>
-
-                {/* delete list item */}
-
-                {admin && (
-                  <Button onClick={() => handleDeleteItem(index)}>
-                    {open ? (
-                      <div id="delete"> Delete</div>
-                    ) : (
-                      <div id="x">x</div>
-                    )}
-                  </Button>
-
-
-
-                )}
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-          <List>
-            <ListItem
-              onClick={handleClickOpenPost}
-              disablePadding
-              sx={{ display: "block" }}
-            >
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  }}
-                >
-                  +
-                </ListItemIcon>
-                <ListItemText
-                  primary={"Add post"}
-                  sx={{ opacity: open ? 1 : 0 }}
-                />
-              </ListItemButton>
-            </ListItem>
-          </List>
-        </Drawer>
+        <Button
+          onClick={handleClickOpenPost}
+          variant="contained"
+          sx={{ my: 3 }}
+        >
+          Add Post
+        </Button>
 
         <AddPostDialog
           addPost={addPost}

@@ -6,13 +6,14 @@ import {
   Outlet,
 } from "react-router-dom";
 import Header from "./components/Header";
+import {Cloudinary} from "@cloudinary/url-gen";
 import Footer from "./components/Footer";
 import NavMenu from "./components/NavMenu";
 import Home from "./pages/Home";
 import AddBlog from "./pages/ArchiveAddBlog";
 import Contact from "./pages/Contact";
 import Paper from "@mui/material/Paper";
-import { styled } from "@mui/material";
+import { ThemeProvider, styled } from "@mui/material";
 import Socials from "./components/Socials";
 import Subscribe from "./pages/Subscribe";
 import { Toaster } from "react-hot-toast";
@@ -25,6 +26,9 @@ import SubcategoryComponent from "./components/SubcategoryPage";
 import SubcategoryPage from "./components/SubcategoryPage";
 import PostPage from "./pages/PostPage";
 
+import theme from './components/SubcategoryPage'
+
+
 // Styled component for Paper element
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -34,10 +38,18 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
+const cld = new Cloudinary({
+  cloud: {
+    cloudName: 'demo'
+  }
+});
+
 function App() {
   return (
     <AuthContextProvider>
       <Router>
+      {/* <CloudinaryContext cloudName="your-cloud-name"> */}
+      {/* <ThemeProvider theme={theme}> */}
         <div
           style={{
             display: "flex",
@@ -73,13 +85,14 @@ function App() {
               <Toaster />
               <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/AddBlog" element={<AddBlog />} />
+                {/* <Route path="/AddBlog" element={<AddBlog />} /> */}
                 <Route path="/Subscribe" element={<Subscribe />} />
                 <Route path="/admin" element={<AdminLogin />} />
-                <Route path="/categories/:categoryName" element={<SubCategories />} />
-                <Route path="/manage" element={<ManagePost />} />
+                <Route path="/categories/:categoryName" element={<SubCategories />} />                
                 <Route path="/categories/:categoryName/:subCategoryName" element={<SubcategoryPage />} />
-                <Route path="/posts/:postId" element={<PostPage />} />
+                <Route path="/manage" element={<ManagePost />} />
+                <Route path="/manage/:postId" element={<ManagePost />} />
+                <Route path="/post/:postId" element={<PostPage />} />
               </Routes>
             </div>
 
@@ -97,6 +110,8 @@ function App() {
           <Footer />
 
         </div>
+        {/* </ThemeProvider> */}
+        {/* </CloudinaryContext> */}
       </Router>
     </AuthContextProvider>
   );

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
+import { styled, useTheme, Theme, CSSObject, createTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
@@ -24,6 +24,24 @@ import { PostListTemplate } from "./PostListTemplate";
 import AddSubCategoryDialog from "./AddSubCategoryDialog";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { Post, AppBarProps } from "../types";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+
+const theme = createTheme();
+
+// Styled component for the delete button
+const StyledDeleteButton = styled(Button)(({ theme }) => ({
+  backgroundColor: "white", // Red background
+  color: "black", // White text color
+  "&:hover": {
+    color: "white",
+    backgroundColor: theme.palette.error.dark, // Darker red background on hover
+  },
+}));
 
 const drawerWidth = "100%";
 
@@ -48,9 +66,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
   },
 });
 
-interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
-}
+
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
@@ -96,6 +112,21 @@ export function SubCategories() {
   const [subCategories, setSubCategories] = useState(initialList);
   const [posts, setPosts] = useState(initialList);
 
+
+
+//imported states
+  const { categoryName, subCategoryName } = useParams<{
+    categoryName: string;
+    subCategoryName: string;
+  }>();
+  const [postsToDelete, setPostsToDelete] = useState<Post[]>([]);
+  const [subCategory, setSubCategory] = useState<any>(null);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [subCategoryIdToDelete, setSubCategoryIdToDelete] = useState("");
+
+
+
+
   const { admin } = useContext(AuthContext) as AuthContextType;
 
   const [openAddSubCategoryDialog, setOpenAddSubCategoryDialog] =
@@ -110,7 +141,9 @@ export function SubCategories() {
 
   const getCategory = async () => {
     try {
-      const res = await axios.get(`/api/categories/${params.categoryName}`);
+
+      // weird bug to discusss. axios.get(`/api/categories/${params.categoryName}`) throws a network 404 error
+      const res = await axios.get(`/api/categories/${categoryName}`);
       console.log(res.data);
       setCategory(res.data);
       setSubCategories(res.data.subCategories);
@@ -139,13 +172,6 @@ export function SubCategories() {
     setOpenAddPostDialog(false);
   };
 
-  //   const handleDrawerOpen = () => {
-  //     setOpen(true);
-  //   };
-
-  //   const handleDrawerClose = () => {
-  //     setOpen(false);
-  //   };
 
   const handleDrawerToggle = () => {
     if (open === true) {
@@ -178,11 +204,35 @@ export function SubCategories() {
     setSubCategories(updatedCategories);
   };
 
-  const removeSubCategory = async (e:any, index:number, id:string) => {
+  const removepost = async (e:any, index:number, id:string) => {
     e.stopPropagation()
     const res = await axios.delete(`/api/subcategories/${id}`)
 
     handleRemoveItem(index);
+  };
+
+
+  const handleOpenDeleteDialog = (subCategoryId: string) => {
+    
+    setSubCategoryIdToDelete(subCategoryId);
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+    setSubCategoryIdToDelete("");
+  };
+
+  const handleDeleteSubCategory = async () => {
+    try {
+      
+      await axios.delete(`/api/subcategories/${subCategoryIdToDelete}`);
+      // Remove the deleted subcategory from the subcategory array
+      setSubCategories(subCategories.filter((subCategory:any) => subCategory._id !== subCategoryIdToDelete));
+      handleCloseDeleteDialog();
+    } catch (error) {
+      console.error("Error deleting subcategory:", error);
+    }
   };
 
   return (
@@ -196,9 +246,9 @@ export function SubCategories() {
             {subCategories.map((subCategory: any, index: any) => (
               <ListItem
                 key={index}
-                onClick={() =>
-                  navigate(`/categories/${category.name}/${subCategory.name}`)
-                }
+                // onClick={() =>
+                //   navigate(`/categories/${category.name}/${subCategory.name}`)
+                // }
                 disablePadding
                 sx={{
                   // display: "block",
@@ -209,13 +259,18 @@ export function SubCategories() {
                       : "white",
                 }}
               >
+
                 <ListItemButton
+                                onClick={() =>
+                                  navigate(`/categories/${category.name}/${subCategory.name}`)
+                                }
                   sx={{
                     minHeight: 12,
                     justifyContent: open ? "initial" : "center",
                     px: 2.5,
                   }}
                 >
+
                   <ListItemIcon
                     sx={{
                       minWidth: 0,
@@ -225,6 +280,7 @@ export function SubCategories() {
                   >
                     {/* {index % 2 === 0 ? <div></div> : <div></div>} */}
                   </ListItemIcon>
+
                   <ListItemText
                     primary={subCategory.name}
                     style={{
@@ -233,19 +289,57 @@ export function SubCategories() {
                       color: open ? "black" : "black",
                     }}
                   />
+
                 </ListItemButton>
 
                 {/* remove list item */}
 
                 {admin && (
-                  <Button onClick={(e)=>removeSubCategory(e, index, subCategory._id)}>
-                    {open ? (
-                      <div id="remove"> Remove</div>
-                    ) : (
-                      <div id="x">x</div>
-                    )}
-                  </Button>
-                )}
+                   <button
+                   onClick={() => handleOpenDeleteDialog(subCategory._id)}
+                   style={{
+                     background: "transparent",
+                     border: "none",
+                     padding: "8px 16px",
+                     borderRadius: "4px",
+                     cursor: "pointer",
+                     transition: "background-color 0.3s",
+                   }}
+                   onMouseEnter={(e) => {
+                     (e.target as HTMLElement).style.backgroundColor =
+                       "rgba(255, 82, 82, 0.8)";
+                   }}
+                   onMouseLeave={(e) => {
+                     (e.target as HTMLElement).style.backgroundColor = "transparent";
+                   }}
+                 >
+                   Delete
+                 </button>)}
+              
+             
+           
+     
+           {/* Delete Confirmation Dialog */}
+           <Dialog
+             open={openDeleteDialog}
+             onClose={handleCloseDeleteDialog}
+             PaperProps={{ sx: { borderRadius: "8px" } }} // Style the paper (dialog container)
+           >
+             <DialogContent>
+               <DialogTitle>Delete Subcategory</DialogTitle>
+     
+               <DialogContentText>
+                 Are you sure you want to delete this subcategory?
+               </DialogContentText>
+             </DialogContent>
+             <DialogActions>
+               <Button onClick={handleCloseDeleteDialog}>Cancel</Button>
+               <StyledDeleteButton onClick={handleDeleteSubCategory} autoFocus>
+                 Delete
+               </StyledDeleteButton>
+             </DialogActions>
+           </Dialog>
+                
               </ListItem>
             ))}
           </List>

@@ -31,7 +31,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.post("/subscriber", async (req, res) => {
   const subExists = await subscriberModel.findOne(req.body);
   if (subExists) {
-    res.status(422).json("Already subscribed, please login instead.");
+    res.status(422).json("Already subscribed, no need to subscribe twice.");
     return;
   }
 

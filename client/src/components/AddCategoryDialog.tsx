@@ -27,7 +27,7 @@ export default function AddCategoryDialog(props: Props) {
             autoFocus
             margin="dense"
             id="name"
-            label="category Name"
+            label="Category Name"
             type="text"
             fullWidth
             variant="standard"

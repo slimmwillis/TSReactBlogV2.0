@@ -25,8 +25,20 @@ import axios, { AxiosError } from "axios";
 import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import SubCategoryModel from "../../../server/src/models/subcategory";
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 
-const drawerWidth = 240;
+
+// Styled component for the delete button
+const StyledDeleteButton = styled(Button)(({ theme }) => ({
+  backgroundColor: "white", // Red background
+  color: "black", // White text color
+  "&:hover": {
+    color: "white",
+    backgroundColor: theme.palette.error.dark, // Darker red background on hover
+  },
+}));
+//updated to use "100%"" instead of 240px
+const drawerWidth = "100%";
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -120,6 +132,8 @@ export default function NavMenu() {
   const [open, setOpen] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
+  const [subCategoryIdToDelete, setSubCategoryIdToDelete] = useState("");
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const { admin } = useContext(AuthContext) as AuthContextType;
 
@@ -194,10 +208,11 @@ export default function NavMenu() {
   useEffect(() => {
     fetchCategories();
   }, []);
+
   // This Might Be Pointless
-  useEffect(() => {
-    fetchSubCategories();
-  }, []);
+  // useEffect(() => {
+  //   fetchSubCategories();
+  // }, []);
 
   const fetchCategories = async () => {
     try {
@@ -207,14 +222,26 @@ export default function NavMenu() {
       console.error("Error fetching categories:", error);
     }
   };
+  
   // This might be pointless
-  const fetchSubCategories = async () => {
-    try {
-      const response = await axios.get("/api/categories/{get.params.id}");
-      setSubCategories(response.data);
-    } catch (error) {
-      console.error("Error fetching subcategories:", error);
-    }
+  // const fetchSubCategories = async () => {
+  //   try {
+  //     const response = await axios.get("/api/categories/{get.params.id}");
+  //     setSubCategories(response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching subcategories:", error);
+  //   }
+  // };
+
+  const handleOpenDeleteDialog = (subCategoryId: string) => {
+    
+    setSubCategoryIdToDelete(subCategoryId);
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+    setSubCategoryIdToDelete("");
   };
 
   return (
@@ -272,11 +299,58 @@ export default function NavMenu() {
 
               {/* remove list item */}
 
-              {admin && (
-                <Button onClick={() => handleRemoveItem(category._id)}>
+              {admin && (<div id="deleteCategory">
+                  <button
+                  onClick={() => handleOpenDeleteDialog(category._id)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    padding: "8px 16px",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    transition: "background-color 0.3s",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.target as HTMLElement).style.backgroundColor =
+                      "rgba(255, 82, 82, 0.8)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.target as HTMLElement).style.backgroundColor = "transparent";
+                  }}
+                >
                   {open ? <div id="remove"> Remove</div> : <div id="x">x</div>}
-                </Button>
-              )}
+                </button>
+             
+            
+          
+    
+          {/* Delete Confirmation Dialog  */}
+          <Dialog
+            open={openDeleteDialog}
+            onClose={handleCloseDeleteDialog}
+            PaperProps={{ sx: { borderRadius: "8px" } }} // Style the paper (dialog container)
+          >
+            <DialogContent>
+              <DialogTitle>Delete Subcategory</DialogTitle>
+    
+              <DialogContentText>
+                Are you sure you want to delete this subcategory?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDeleteDialog}>Cancel</Button>
+              <StyledDeleteButton onClick={() => handleRemoveItem(category._id)} autoFocus>
+                Delete
+              </StyledDeleteButton>
+            </DialogActions>
+          </Dialog>
+          
+
+                 {/* <Button onClick={() => handleRemoveItem(category._id)}>
+                   {open ? <div id="remove"> Remove</div> : <div id="x">x</div>}
+                </Button>  */}
+                </div>
+                )}
             </ListItem>
           ))}
         </List>
@@ -310,6 +384,7 @@ export default function NavMenu() {
             </ListItemButton>
           </ListItem>
         </List>
+        
       </Drawer>
 
       <AddCategoryDialog

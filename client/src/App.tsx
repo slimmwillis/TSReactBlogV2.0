@@ -10,10 +10,10 @@ import {Cloudinary} from "@cloudinary/url-gen";
 import Footer from "./components/Footer";
 import NavMenu from "./components/NavMenu";
 import Home from "./pages/Home";
-import AddBlog from "./pages/ArchiveAddBlog";
+// import AddBlog from "./pages/ArchiveAddBlog";
 import Contact from "./pages/Contact";
 import Paper from "@mui/material/Paper";
-import { ThemeProvider, styled } from "@mui/material";
+import { ThemeProvider, List, ListItem, ListItemText, styled, useMediaQuery } from "@mui/material";
 import Socials from "./components/Socials";
 import Subscribe from "./pages/Subscribe";
 import { Toaster } from "react-hot-toast";
@@ -45,6 +45,9 @@ const cld = new Cloudinary({
 });
 
 function App() {
+  // Create a Media Query
+  const isMobile = useMediaQuery("(max-width:600px)");
+
   return (
     <AuthContextProvider>
       <Router>
@@ -96,15 +99,32 @@ function App() {
               </Routes>
             </div>
 
-            {/* Right Sidebar */}
+            {/* Right Sidebar not displayed on mobile*/}
+            {!isMobile && (
             <div
               id="rightBar"
               style={{ flex: "0 0 auto", padding: "20px", background: "white" }}
             >
-              {/* Right sidebar content */}
+           
               <Socials />
             </div>
+            )}
           </div>
+
+             {/* Display Socials below middle content on mobile */}
+            {isMobile && (
+              <div
+                style={{
+                  flex: "0 0 auto",
+                  padding: "20px",
+                  background: "white",
+                  width: "100%",
+                }}>
+                <Socials />
+              </div>
+            )} 
+
+
 
           {/* Footer */}
           <Footer />

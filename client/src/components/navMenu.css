@@ -33,13 +33,13 @@ a:-webkit-any-link:hover {
   padding-left: 5px !important;
 }
 
-#remove {
+/* #remove {
   color: black;
   background-color: rgb(226 221 221);
   border-radius: 6px;
   font-size: 0.5rem;
   padding: 4px;
-}
+} */
 
 #x {
     display: flex;

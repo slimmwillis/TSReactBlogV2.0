@@ -14,6 +14,7 @@ import PostModel from "../../../server/src/models/postModel"; // Import the Post
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import the styles for ReactQuill
 import { useNavigate, useParams } from "react-router-dom"; // Import useNavigate
+import { toast } from "react-hot-toast"
 
 interface Category {
   _id: string;
@@ -37,6 +38,7 @@ interface Post {
   category: string;
   subCategory: string;
   subCategoryName: string;
+  image?: string
 }
 
 const ManagePost: React.FC = () => {
@@ -50,6 +52,8 @@ const ManagePost: React.FC = () => {
   const [selectedSubCategory, setSelectedSubCategory] = useState<
     string | undefined
   >("");
+  const params = useParams();
+
   const [formData, setFormData] = useState<FormData>({
     _id: "",
     title: "",
@@ -82,11 +86,14 @@ const ManagePost: React.FC = () => {
         console.log("~!this is the data: ", postData.subCategoryName);
       }
       setSelectedSubCategory(postData.subCategoryName);
+      setImage(postData?.image ?? "")
       setFormData({
         ...postData,
         category: postData.category, // Ensure the correct field name
         subCategory: postData.subCategory, // Ensure the correct field name
       });
+      setImageFile(null);
+
     } catch (error) {
       console.error("Error fetching post data:", error);
     }
@@ -152,7 +159,12 @@ const ManagePost: React.FC = () => {
   const handleEditSubmit = async (e: any) => {
     e.preventDefault();
     try {
-      const response = await axios.put(`/api/post/${editPostId}`, formData);
+      const response = await axios.put(`/api/post/${editPostId}`, {
+        ...formData,
+        // category: params?.categoryName ?? "",
+        // subCategory: params?.subCategoryName ?? "",
+      });
+      toast.success("Post updated successfully")
       console.log("Post updated:", response.data);
       setIsEditMode(false); // Exit edit mode
       setEditPostId(null);
@@ -182,8 +194,8 @@ const ManagePost: React.FC = () => {
 
     let postData: any = {
       ...formData,
-      category: selectedCategory,
-      subCategory: selectedSubCategory,
+      category: params?.categoryName ?? "",
+      subCategory: params?.subCategoryName ?? "",
     };
 
     // Handle form submission or API calls with the form data
@@ -200,11 +212,15 @@ const ManagePost: React.FC = () => {
       postData = {
         ...postData,
         image: cloudinaryRes.data.secure_url,
+        category: params?.categoryName ?? "",
+        subCategory: params?.subCategoryName ?? "",
       };
       const response = await axios.post(
         `http://localhost:5500/api/createPost`,
         postData
       );
+      toast.success("Post is created successfully")
+
       console.log("Post submitted:", response.data);
       console.log("Here is the Form Data:", formData);
       console.log("Here is the Post Data:", postData);
@@ -241,6 +257,8 @@ const ManagePost: React.FC = () => {
     try {
       const response = await axios.get("/api/posts"); // Update the endpoint
       setPosts(response.data);
+      setImageFile(null);
+
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
@@ -259,200 +277,136 @@ const ManagePost: React.FC = () => {
 
   return (
     <>
-      {isEditMode ? (
-        <>
-          {console.log("isEditMode is true")} {/* Add this line */}
-          // Render form for editing existing post
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          padding: "16px",
+        }}
+      >
+        {isEditMode ? (
           <form onSubmit={handleEditSubmit}>
-            {/* Form fields for editing */}
+            <input type="file" accept="image/*" onChange={pickImage} />
+            {image && <img src={image}
+              style={{
+                marginTop: 10,
+                height: 100,
+                width: 100,
+                objectFit: "contain"
+              }}
+            />}
+            <TextField
+              fullWidth
+              label="Title"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              sx={{ marginBottom: "16px", marginTop: "16px" }}
+            />
 
-            <Box sx={{ width: 500, maxWidth: "100%" }}>
-              <TextField
-                fullWidth
-                label="title"
-                id="fullWidth"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-              />
-            </Box>
+            {/* ReactQuill editor */}
+            <ReactQuill
+              style={{ height: 140, marginBottom: 60 }}
+              placeholder="Description"
 
-            <Box sx={{ width: 500, maxWidth: "100%" }}>
-              <ReactQuill
-                value={formData.body}
-                onChange={handleQuillChange}
-                modules={{
-                  clipboard: {
-                    matchVisual: false,
-                  },
-                  toolbar: [
-                    [{ header: "1" }, { header: "2" }, { font: [] }],
-                    [{ list: "ordered" }, { list: "bullet" }],
-                    ["bold", "italic", "underline"],
-                    [{ align: [] }],
-                    ["link"],
-                  ],
-                }}
-                formats={[
-                  "header",
-                  "bold",
-                  "italic",
-                  "underline",
-                  "list",
-                  "bullet",
-                  "align",
-                  "link",
-                ]}
-              />
-            </Box>
+              value={formData.body}
+              onChange={handleQuillChange}
+              modules={{
+                clipboard: {
+                  matchVisual: false,
+                },
+                toolbar: [
+                  [{ header: "1" }, { header: "2" }, { font: [] }],
+                  [{ list: "ordered" }, { list: "bullet" }],
+                  ["bold", "italic", "underline"],
+                  [{ align: [] }],
+                  ["link"],
+                ],
+              }}
+              formats={[
+                "header",
+                "bold",
+                "italic",
+                "underline",
+                "list",
+                "bullet",
+                "align",
+                "link",
+              ]}
+            />
 
-            <FormControl fullWidth>
-              <InputLabel id="category-label">Category</InputLabel>
-              <Select
-                labelId="category-label"
-                id="category-select"
-                value={selectedCategory}
-                onChange={handleCategoryChange}
-                label="Category"
-                name="category"
-              >
-                {categories.map((category) => (
-                  <MenuItem key={category._id} value={category._id}>
-                    {category.name}
-                  </MenuItem>
-                ))}
-              </Select>
+            {/* Category select */}
+            {/* ... (category and subcategory selects) */}
 
-              {selectedCategory && (
-                <FormControl fullWidth>
-                  <InputLabel id="subCategory-label">subCategory</InputLabel>
-                  <Select
-                    labelId="subCategory-label"
-                    id="subCategory-select"
-                    value={selectedSubCategory}
-                    onChange={handlesubCategoryChange}
-                    label="SubCategory"
-                    name="subCategory"
-                  >
-                    {categories
-                      .find(
-                        (subCategory) => subCategory._id === selectedCategory
-                      )
-                      ?.subCategoryNames?.map((subCategoryName) => (
-                        <MenuItem key={subCategoryName} value={subCategoryName}>
-                          {subCategoryName}
-                        </MenuItem>
-                      ))}
-                  </Select>
-                </FormControl>
-              )}
-            </FormControl>
-            <Button type="submit">Save Changes</Button>
+            {/* Submit button */}
+            <Button type="submit" variant="contained">
+              Save Changes
+            </Button>
           </form>
-        </>
-      ) : (
-        <>
-          {console.log("isEditMode is false")} {/* Add this line */}
+        ) : (
           <form onSubmit={handleSubmit}>
             <input type="file" accept="image/*" onChange={pickImage} />
-            <img src={image} />
+            {
+              image &&
+              <img src={image} style={{
+                marginTop: 10,
+                height: 100,
+                width: 100,
+                objectFit: "contain"
+              }} />}
 
-            <Box sx={{ width: 500, maxWidth: "100%" }}>
-              <TextField
-                fullWidth
-                label="title"
-                id="fullWidth"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-              />
-            </Box>
+            {/* Title input */}
+            <TextField
+              fullWidth
+              label="Title"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              sx={{ marginBottom: "16px", marginTop: "16px" }}
+            />
 
-            <Box sx={{ width: 500, maxWidth: "100%" }}>
-              <ReactQuill
-                value={formData.body}
-                onChange={handleQuillChange}
-                modules={{
-                  clipboard: {
-                    matchVisual: false,
-                  },
-                  toolbar: [
-                    [{ header: "1" }, { header: "2" }, { font: [] }],
-                    [{ list: "ordered" }, { list: "bullet" }],
-                    ["bold", "italic", "underline"],
-                    [{ align: [] }],
-                    ["link"],
-                  ],
-                }}
-                formats={[
-                  "header",
-                  "bold",
-                  "italic",
-                  "underline",
-                  "list",
-                  "bullet",
-                  "align",
-                  "link",
-                ]}
-              />
-            </Box>
+            {/* ReactQuill editor */}
+            <ReactQuill
+              value={formData.body}
+              placeholder="Description"
+              style={{ height: 140 }}
+              onChange={handleQuillChange}
+              modules={{
+                clipboard: {
+                  matchVisual: false,
+                },
+                toolbar: [
+                  [{ header: "1" }, { header: "2" }, { font: [] }],
+                  [{ list: "ordered" }, { list: "bullet" }],
+                  ["bold", "italic", "underline"],
+                  [{ align: [] }],
+                  ["link"],
+                ],
+              }}
+              formats={[
+                "header",
+                "bold",
+                "italic",
+                "underline",
+                "list",
+                "bullet",
+                "align",
+                "link",
+              ]}
+            // sx={{ marginBottom: "16px" }}
+            />
 
-            <FormControl fullWidth>
-              <InputLabel id="category-label">Category</InputLabel>
-              <Select
-                labelId="category-label"
-                id="category-select"
-                value={selectedCategory}
-                onChange={handleCategoryChange}
-                label="Category"
-                name="category"
-              >
-                {categories.map((category) => (
-                  <MenuItem key={category.name} value={category.name}>
-                    {category.name}
-                  </MenuItem>
-                ))}
-              </Select>
+            {/* Category select */}
+            {/* ... (category and subcategory selects) */}
 
-              {selectedCategory && (
-                <FormControl fullWidth>
-                  <InputLabel id="subCategory-label">subCategory</InputLabel>
-                  <Select
-                    labelId="subCategory-label"
-                    id="subCategory-select"
-                    value={selectedSubCategory}
-                    onChange={handlesubCategoryChange}
-                    label="subCategory"
-                    name="subCategory"
-                  >
-                    {categories
-                      .find((category) => category.name === selectedCategory)
-                      ?.subCategoryNames?.map((subCategoryName) => (
-                        <MenuItem key={subCategoryName} value={subCategoryName}>
-                          {subCategoryName}
-                        </MenuItem>
-                      ))}
-                  </Select>
-                </FormControl>
-              )}
-            </FormControl>
-
-            <Button type="submit" variant="contained">
+            {/* Submit button */}
+            <Button type="submit" variant="contained" style={{ marginTop: 70 }}>
               Post
             </Button>
-
-            {/* Display existing posts */}
-            {/* {posts.map((post) => (
-        <div key={post._id}>
-          <h2>{post.title}</h2>
-          <p>{post.body}</p>
-          <Button onClick={() => handleEditPost(post._id)}>Edit</Button>
-          
-          </div>
-          ))} */}
           </form>
-        </>
-      )}
+        )}
+      </Box>
     </>
   );
 };

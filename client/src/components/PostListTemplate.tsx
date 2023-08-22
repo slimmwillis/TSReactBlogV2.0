@@ -15,7 +15,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Typography from "@mui/material/Typography";
 import "./navMenu.css";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Button from "@mui/material/Button";
 import { AuthContext, AuthContextType } from "../context/AuthContext";
 import AddPostDialog from "./ArchiveAddPostDialog";
@@ -94,12 +94,12 @@ const Drawer = styled(MuiDrawer, {
 export function PostListTemplate() {
   const initialList: any = [];
   const navigate = useNavigate();
-  const location = useLocation();
+  const params = useParams();
   const theme = useTheme();
   const [open, setOpen] = useState(true);
   const [categories, setCategories] = useState(initialList);
   const [posts, setPosts] = useState(initialList);
-
+  console.log("location", params)
   const { admin } = useContext(AuthContext) as AuthContextType;
 
   const [openAddPostDialog, setOpenAddPostDialog] = useState(false);
@@ -113,7 +113,7 @@ export function PostListTemplate() {
   const navigateToManagePost = () => {
     // Your custom navigation logic here
     // For example, you can use window.location.href or any other method to navigate
-    navigate("/manage");
+    navigate(`/manage/${params?.categoryName}/${params?.subCategoryName}`);
   };
 
   const handleClosePost = () => {

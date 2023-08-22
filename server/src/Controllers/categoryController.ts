@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import categoryModel from "../models/category";
 import subCategoryModel from "../models/subcategory";
-import { rmSync } from "fs";
+import PostModel from "../models/postModel";
+
 
 export const createCategory = async (req: Request, res: Response) => {
   try {
@@ -53,8 +54,10 @@ export const deleteCategory = async (req: Request, res: Response) => {
   try {
     const categoryId = req.params.id; // Use the correct parameter name
     const category = await categoryModel.findByIdAndDelete(categoryId);
-// Delete associated subcategories
-await subCategoryModel.deleteMany({ category: categoryId });
+    // Delete associated subcategories
+    await subCategoryModel.deleteMany({ category: categoryId });
+    await PostModel.deleteMany({ category: categoryId });
+
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
     }

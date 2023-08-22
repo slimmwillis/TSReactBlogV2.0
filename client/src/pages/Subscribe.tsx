@@ -9,51 +9,55 @@ const Subscribe = () => {
 
     const [loading, setLoading] = useState(false); // Define the loading state
     const [email, setEmail] = useState('')
-    
-    const subscribeHandler = async (e: any) =>{
-    e.preventDefault()
-    try {
-        const res = await axios.post('/subscriber', {
-            email
-            })   
-            toast.success('subscribed successfully')
-            setEmail("")
-    } catch (error) {
-        toast.error((error as any).response.data)
+
+    const subscribeHandler = async (e: any) => {
+        e.preventDefault()
+        try {
+            if (email) {
+                const res = await axios.post('/subscriber', {
+                    email
+                })
+                toast.success('subscribed successfully')
+                setEmail("")
+            } else {
+                throw new Error("Email is required")
+            }
+        } catch (error) {
+            toast.error((error as any).response?.data ?? "Email is required")
+        }
+
+
     }
 
 
-}
-   
+    const deleteSubscriber = async () => {
 
-const deleteSubscriber = async () => {
+        if (!email) {
+            toast.error("Please provide an email to delete.");
+            return;
+        }
 
-    if (!email) {
-        toast.error("Please provide an email to delete.");
-        return;
-      }
-  
-    try {
-      setLoading(true);
-      // Add your delete subscribers logic here using an axios request
-      await axios.post("/deleteSubscriber", { emailToDelete: email });
-      setLoading(false);
-      toast.success("Subscribers deleted successfully");
-      setEmail("");
-    } catch (error) {
-      setLoading(false);
-      toast.error("Error deleting subscriber");
-    }
-  };
+        try {
+            setLoading(true);
+            // Add your delete subscribers logic here using an axios request
+            await axios.post("/deleteSubscriber", { emailToDelete: email });
+            setLoading(false);
+            toast.success("Subscribers deleted successfully");
+            setEmail("");
+        } catch (error) {
+            setLoading(false);
+            toast.error("Error deleting subscriber");
+        }
+    };
 
-    return ( 
-        
+    return (
+
         <>
             {/* login */}
 
 
 
-            <Form onSubmit={subscribeHandler}>  
+            <Form onSubmit={subscribeHandler}>
                 <Row style={{
                     height: "80vh",
                     justifyContent: "center",
@@ -61,26 +65,25 @@ const deleteSubscriber = async () => {
                 }}>
                     <Col xs={6}>
                         <Stack gap={3}>
-                            
-                            <Form.Control value={email} type="email" placeholder="email" onChange={(e) => setEmail(e.target.value)} />
+
+                            <Form.Control value={email} type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
                             {/* <Form.Control type="password" placeholder="password" onChange={((e) => updateLoginInfo({ ...loginInfo, password: e.target.value }))} /> */}
-                            <Button variant="primary" type="submit">{ false ? "Loading..." : "Subscribe"}</Button>
+                            <Button variant="primary" type="submit">{false ? "Loading..." : "Subscribe"}</Button>
 
                             <Button
-        variant="danger"
-        onClick={deleteSubscriber}
-        disabled={loading}
-        style={{ marginLeft: "1rem" }}
-      >
-        {loading ? "Deleting..." : "Delete Subscriber"}
-      </Button>
+                                variant="danger"
+                                onClick={deleteSubscriber}
+                                disabled={loading}
+                            >
+                                {loading ? "Deleting..." : "Delete Subscriber"}
+                            </Button>
 
-                    {/* {loginError?.error && (
+                            {/* {loginError?.error && (
                         <Alert variant="danger"><p>{loginError?.message}</p></Alert>
                     )} */}
-    
 
-                            
+
+
                         </Stack>
                     </Col>
                 </Row>
@@ -89,17 +92,17 @@ const deleteSubscriber = async () => {
             {/* <h4>or</h4> */}
 
             {/* login subscriber */}
-        
-
-            
-            
 
 
 
-{/* register */}
 
 
-</>
+
+
+            {/* register */}
+
+
+        </>
     )
 }
 

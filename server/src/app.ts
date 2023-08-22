@@ -77,6 +77,7 @@ app.delete("/api/categories/:id", deleteCategory);
 app.get("/api/categories/:categoryName", getCategory);
 app.post("/api/categories/:categoryId/subcategories", createSubCategory);
 app.delete("/api/subcategories/:id", deleteSubCategory)
+// "mongodb+srv://darshan82:ipDsZ6wxRYSvwkNd@cluster0.6anhc.mongodb.net/PRACTICE-NODEJS-GRAPHQL"
 
 mongoose.connect("mongodb://localhost:27017/TsReactBlogV2_0").then(() => {
   app.listen(5500, () => {

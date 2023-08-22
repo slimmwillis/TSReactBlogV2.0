@@ -193,7 +193,7 @@ export default function NavMenu() {
       );
       if (categoryToDelete) {
         const encodedCategoryName = encodeURIComponent(categoryToDelete.name);
-        navigate(`/categories/${encodedCategoryName}`);
+        navigate(`/subcategories/${encodedCategoryName}`);
       }
     } catch (error) {
       console.error("Error removing category:", error);
@@ -260,13 +260,13 @@ export default function NavMenu() {
           {categories.map((category, index) => (
             <ListItem
               key={index}
-              onClick={() => navigate(`/categories/${category.name}`)}
+              onClick={() => navigate(`/subcategories/${category.name}`)}
               disablePadding
               sx={{
                 display: "block",
                 bgcolor:
                   location.pathname ===
-                  `/categories/${encodeURIComponent(category.name)}`
+                  `/subcategories/${encodeURIComponent(category.name)}`
                     ? "rgb(245, 245, 245)"
                     : "white",
               }}

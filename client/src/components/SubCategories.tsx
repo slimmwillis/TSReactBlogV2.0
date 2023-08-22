@@ -114,7 +114,7 @@ export function SubCategories() {
 
 
 
-//imported states
+  //imported states
   const { categoryName, subCategoryName } = useParams<{
     categoryName: string;
     subCategoryName: string;
@@ -190,6 +190,8 @@ export function SubCategories() {
       );
       console.log(res.data);
       setSubCategories([...subCategories, res.data]);
+      toast.success('Category Successfully Added')
+
     } catch (error) {
       toast.error((error as any)?.response?.data);
     }
@@ -204,7 +206,7 @@ export function SubCategories() {
     setSubCategories(updatedCategories);
   };
 
-  const removepost = async (e:any, index:number, id:string) => {
+  const removepost = async (e: any, index: number, id: string) => {
     e.stopPropagation()
     const res = await axios.delete(`/api/subcategories/${id}`)
 
@@ -213,7 +215,7 @@ export function SubCategories() {
 
 
   const handleOpenDeleteDialog = (subCategoryId: string) => {
-    
+
     setSubCategoryIdToDelete(subCategoryId);
     setOpenDeleteDialog(true);
   };
@@ -225,10 +227,10 @@ export function SubCategories() {
 
   const handleDeleteSubCategory = async () => {
     try {
-      
+
       await axios.delete(`/api/subcategories/${subCategoryIdToDelete}`);
       // Remove the deleted subcategory from the subcategory array
-      setSubCategories(subCategories.filter((subCategory:any) => subCategory._id !== subCategoryIdToDelete));
+      setSubCategories(subCategories.filter((subCategory: any) => subCategory._id !== subCategoryIdToDelete));
       handleCloseDeleteDialog();
     } catch (error) {
       console.error("Error deleting subcategory:", error);
@@ -254,16 +256,16 @@ export function SubCategories() {
                   // display: "block",
                   bgcolor:
                     location.pathname ===
-                    `/categories/${encodeURIComponent(subCategory.name)}`
+                      `/subcategories/${encodeURIComponent(subCategory.name)}`
                       ? "rgb(245, 245, 245)"
                       : "white",
                 }}
               >
 
                 <ListItemButton
-                                onClick={() =>
-                                  navigate(`/categories/${category.name}/${subCategory.name}`)
-                                }
+                  onClick={() =>
+                    navigate(`/subcategories/${category.name}/${subCategory.name}`)
+                  }
                   sx={{
                     minHeight: 12,
                     justifyContent: open ? "initial" : "center",
@@ -295,51 +297,48 @@ export function SubCategories() {
                 {/* remove list item */}
 
                 {admin && (
-                   <button
-                   onClick={() => handleOpenDeleteDialog(subCategory._id)}
-                   style={{
-                     background: "transparent",
-                     border: "none",
-                     padding: "8px 16px",
-                     borderRadius: "4px",
-                     cursor: "pointer",
-                     transition: "background-color 0.3s",
-                   }}
-                   onMouseEnter={(e) => {
-                     (e.target as HTMLElement).style.backgroundColor =
-                       "rgba(255, 82, 82, 0.8)";
-                   }}
-                   onMouseLeave={(e) => {
-                     (e.target as HTMLElement).style.backgroundColor = "transparent";
-                   }}
-                 >
-                   Delete
-                 </button>)}
-              
-             
-           
-     
-           {/* Delete Confirmation Dialog */}
-           <Dialog
-             open={openDeleteDialog}
-             onClose={handleCloseDeleteDialog}
-             PaperProps={{ sx: { borderRadius: "8px" } }} // Style the paper (dialog container)
-           >
-             <DialogContent>
-               <DialogTitle>Delete Subcategory</DialogTitle>
-     
-               <DialogContentText>
-                 Are you sure you want to delete this subcategory?
-               </DialogContentText>
-             </DialogContent>
-             <DialogActions>
-               <Button onClick={handleCloseDeleteDialog}>Cancel</Button>
-               <StyledDeleteButton onClick={handleDeleteSubCategory} autoFocus>
-                 Delete
-               </StyledDeleteButton>
-             </DialogActions>
-           </Dialog>
-                
+                  <button
+                    onClick={() => handleOpenDeleteDialog(subCategory._id)}
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      padding: "8px 16px",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      transition: "background-color 0.3s",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.target as HTMLElement).style.backgroundColor =
+                        "rgba(255, 82, 82, 0.8)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.target as HTMLElement).style.backgroundColor = "transparent";
+                    }}
+                  >
+                    Delete
+                  </button>)}
+
+                {/* Delete Confirmation Dialog */}
+                <Dialog
+                  open={openDeleteDialog}
+                  onClose={handleCloseDeleteDialog}
+                  PaperProps={{ sx: { borderRadius: "8px" } }} // Style the paper (dialog container)
+                >
+                  <DialogContent>
+                    <DialogTitle>Delete Subcategory</DialogTitle>
+
+                    <DialogContentText>
+                      Are you sure you want to delete this subcategory?
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleCloseDeleteDialog}>Cancel</Button>
+                    <StyledDeleteButton onClick={handleDeleteSubCategory} autoFocus>
+                      Delete
+                    </StyledDeleteButton>
+                  </DialogActions>
+                </Dialog>
+
               </ListItem>
             ))}
           </List>

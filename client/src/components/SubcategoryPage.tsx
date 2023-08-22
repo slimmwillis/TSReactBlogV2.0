@@ -20,7 +20,7 @@ const StyledDeleteButton = styled(Button)(({ theme }) => ({
   color: "black", // White text color
   "&:hover": {
     color: "white",
-    backgroundColor: theme.palette.error.dark, // Darker red background on hover
+    backgroundColor: "red" // Darker red background on hover
   },
 }));
 
@@ -29,7 +29,14 @@ function SubcategoryPage() {
     categoryName: string;
     subCategoryName: string;
   }>();
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<Post[]>([
+    // {
+    //   _id: "@2",
+    //   body: "adsadsdc",
+    //   title: "title", image: "https://res.cloudinary.com/wbailey89/image/upload/v1692641541/utdgxucnzikyhjri6bzd.jpg"
+    // },
+    
+  ]);
   const [category, setCategory] = useState<any>(null);
   const [subCategory, setSubCategory] = useState<any>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -106,12 +113,7 @@ function SubcategoryPage() {
       <h5>Posts in {subCategoryName}</h5>
       <PostListTemplate />
 
-      <ul
-        style={{
-          margin: 0,
-          padding: 0,
-        }}
-      >
+      <ul style={{ listStyle: "none", padding: 0 }}>
         {posts.map((post) => (
           <li
             key={post._id}
@@ -119,44 +121,36 @@ function SubcategoryPage() {
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
+              margin: "16px 0",
+              padding: "16px",
+              border: "1px solid #ccc",
+              borderRadius: "8px",
             }}
           >
             <img
               src={post.image}
+              alt={post.title}
               style={{
                 width: "100px",
                 height: "100px",
+                marginRight: "16px",
+                borderRadius:50
               }}
             />
             <div
               onClick={() => navigate(`/post/${post._id}`)}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", flexGrow: 1 ,fontSize:30}}
             >
-              {post.title}{" "}
+              {post?.title?.toUpperCase()}
             </div>
 
             <Button onClick={() => handleEditPost(post._id)}>Edit</Button>
 
-            <button
+            <StyledDeleteButton
               onClick={() => handleOpenDeleteDialog(post._id)}
-              style={{
-                background: "transparent",
-                border: "none",
-                padding: "8px 16px",
-                borderRadius: "4px",
-                cursor: "pointer",
-                transition: "background-color 0.3s",
-              }}
-              onMouseEnter={(e) => {
-                (e.target as HTMLElement).style.backgroundColor =
-                  "rgba(255, 82, 82, 0.8)";
-              }}
-              onMouseLeave={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = "transparent";
-              }}
             >
               Delete
-            </button>
+            </StyledDeleteButton>
           </li>
         ))}
       </ul>
@@ -167,9 +161,8 @@ function SubcategoryPage() {
         onClose={handleCloseDeleteDialog}
         PaperProps={{ sx: { borderRadius: "8px" } }} // Style the paper (dialog container)
       >
+        <DialogTitle>Delete Post</DialogTitle>
         <DialogContent>
-          <DialogTitle>Delete Post</DialogTitle>
-
           <DialogContentText>
             Are you sure you want to delete this post?
           </DialogContentText>

@@ -1,34 +1,29 @@
-import { Button } from '@mui/material';
 import React from 'react';
-import "./header.css"
+import { Button, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import "./header.css";
 
 const Header: React.FC = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
   return (
-<>
-<div style={{ display:"flex", borderBottom: "1px solid #173cbe" }}>
-  <div id='subscribe-container' style={{backgroundColor:'#f0f0f0', flex:'1', justifyContent:'center'}}>
-    <Button onClick={()=> navigate('/Subscribe') } variant="contained" color="success" id="button">
-        Subscribe
-      </Button>
-  </div>
-
-    <div style={{ background: '#f0f0f0', minHeight:'5vh', flex:'1', textAlign:"center"}}>
-
-      
-    
-     <a style={{marginTop:'10px', color:'black'}} href="/">William's Blog</a>
-
+    <div className="header-container">
+      <Grid container alignItems="center" borderBottom={1} sx={{ borderColor: '#173cbe', paddingTop: 2, paddingBottom: 2 }}>
+        <Grid item xs={4} textAlign="center">
+          <Button onClick={() => navigate('/Subscribe')} variant="contained" color="success">
+            Subscribe
+          </Button>
+        </Grid>
+        <Grid item xs={4} textAlign="center" style={{ fontSize: "150%", fontWeight: "bold" }}>
+          <a className="blog-link" href="/">
+            William's Blog
+          </a>
+        </Grid>
+        <Grid item xs={4} textAlign="center">
+          {/* Empty grid item */}
+        </Grid>
+      </Grid>
     </div>
-
-    <div style={{ background: '#f0f0f0', minHeight:'5vh', flex:'1', textAlign:"center"}}>
-     <div style={{marginTop:'10px'}}></div>
-    </div>
-
-
-</div>
-</>
   );
 };
 

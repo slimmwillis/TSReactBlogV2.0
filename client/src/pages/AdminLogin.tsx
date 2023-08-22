@@ -1,12 +1,16 @@
 import { Alert, Button, Col, Form, Row, Stack } from "react-bootstrap";
 import { useState, useContext } from "react";
 import { AuthContext, AuthContextType } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast"
 
 // DO THIS ON THE BACKEND
 const ADMIN_EMAIL = "admin@admin.com";
 const ADMIN_PASSWORD = "admin";
 
 const AdminLogin = () => {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -14,6 +18,11 @@ const AdminLogin = () => {
 
   const loginAdmin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (email === "" || password === "") {
+      alert("Please fill your email address and password");
+
+      return
+    }
     if (email !== ADMIN_EMAIL) {
       alert("Wrong email!");
       return;
@@ -29,6 +38,9 @@ const AdminLogin = () => {
       password,
     });
     localStorage.setItem("admin", JSON.stringify({ email, password }));
+    toast.success('Login Successfully')
+    navigate(`/Subscribe`);
+
   };
 
   return (
@@ -46,14 +58,14 @@ const AdminLogin = () => {
             <Form.Control
               type="email"
               value={email}
-              placeholder="email"
+              placeholder="Email"
               onChange={(e) => setEmail(e.target.value)}
             />
 
             <Form.Control
               type="password"
               value={password}
-              placeholder="password"
+              placeholder="Password"
               onChange={(e) => setPassword(e.target.value)}
             />
             <Button variant="primary" type="submit">

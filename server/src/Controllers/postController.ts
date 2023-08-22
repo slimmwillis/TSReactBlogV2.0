@@ -19,7 +19,16 @@ export const createPost = async (req: any, res: any) => {
 
     if (!title || !body)
       return res.status(400).json("All fields are required...");
+    console.log("Darshan", {
+      title,
+      body,
+      category: categoryObject?._id,
 
+      subCategory: subCategoryObject?._id,
+      categoryName: categoryObject?.name, // Replace with actual category name
+      subCategoryName: subCategoryObject?.name,
+      image
+    })
     post = new PostModel({
       title,
       body,
@@ -70,7 +79,7 @@ export const getPostsByCategory = async (req: any, res: any) => {
       subCategory: req.params.subCategoryId,
     });
     res.status(200).json(posts);
-  } catch (error) {}
+  } catch (error) { }
 };
 
 //delete the post

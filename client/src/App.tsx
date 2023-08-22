@@ -6,7 +6,7 @@ import {
   Outlet,
 } from "react-router-dom";
 import Header from "./components/Header";
-import {Cloudinary} from "@cloudinary/url-gen";
+import { Cloudinary } from "@cloudinary/url-gen";
 import Footer from "./components/Footer";
 import NavMenu from "./components/NavMenu";
 import Home from "./pages/Home";
@@ -51,8 +51,8 @@ function App() {
   return (
     <AuthContextProvider>
       <Router>
-      {/* <CloudinaryContext cloudName="your-cloud-name"> */}
-      {/* <ThemeProvider theme={theme}> */}
+        {/* <CloudinaryContext cloudName="your-cloud-name"> */}
+        {/* <ThemeProvider theme={theme}> */}
         <div
           style={{
             display: "flex",
@@ -91,9 +91,9 @@ function App() {
                 {/* <Route path="/AddBlog" element={<AddBlog />} /> */}
                 <Route path="/Subscribe" element={<Subscribe />} />
                 <Route path="/admin" element={<AdminLogin />} />
-                <Route path="/categories/:categoryName" element={<SubCategories />} />                
-                <Route path="/categories/:categoryName/:subCategoryName" element={<SubcategoryPage />} />
-                <Route path="/manage" element={<ManagePost />} />
+                <Route path="/subcategories/:categoryName" element={<SubCategories />} />
+                <Route path="/subcategories/:categoryName/:subCategoryName" element={<SubcategoryPage />} />
+                <Route path="/manage/:categoryName/:subCategoryName" element={<ManagePost />} />
                 <Route path="/manage/:postId" element={<ManagePost />} />
                 <Route path="/post/:postId" element={<PostPage />} />
               </Routes>
@@ -101,28 +101,28 @@ function App() {
 
             {/* Right Sidebar not displayed on mobile*/}
             {!isMobile && (
-            <div
-              id="rightBar"
-              style={{ flex: "0 0 auto", padding: "20px", background: "white" }}
-            >
-           
-              <Socials />
-            </div>
+              <div
+                id="rightBar"
+                style={{ flex: "0 0 auto", padding: "20px", background: "white" }}
+              >
+
+                <Socials />
+              </div>
             )}
           </div>
 
-             {/* Display Socials below middle content on mobile */}
-            {isMobile && (
-              <div
-                style={{
-                  flex: "0 0 auto",
-                  padding: "20px",
-                  background: "white",
-                  width: "100%",
-                }}>
-                <Socials />
-              </div>
-            )} 
+          {/* Display Socials below middle content on mobile */}
+          {isMobile && (
+            <div
+              style={{
+                flex: "0 0 auto",
+                padding: "20px",
+                background: "white",
+                width: "100%",
+              }}>
+              <Socials />
+            </div>
+          )}
 
 
 
